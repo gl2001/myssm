@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sz.gl.pojo.Users" >
+
+	<select id="islogin" parameterType="cn.sz.gl.pojo.Users" resultMap="userinfo" >
+		select userid,loginname,loginpwd,realname,email,user_desc,user_status,deptno,roleid,picpath from users 
+		where loginname=#{loginname} and loginpwd=#{loginpwd} 
+	</select>
+	
+	<resultMap type="cn.sz.gl.pojo.Users" id="userinfo">
+		<id property="userid" column="userid" />
+		<result property="loginname" column="loginname" />
+		<result property="loginpwd" column="loginpwd" />
+		<result property="realname" column="realname" />
+		<result property="email" column="email" />
+		<result property="userDesc" column="user_desc" />
+		<result property="status" column="user_status" />
+		<result property="picpath" column="picpath" />
+		<association property="dept" column="deptno" select="cn.sz.gl.pojo.Dept.findDeptByDeptno"></association>
+		<association property="role" column="roleid" select="cn.sz.gl.pojo.Role.findRoleByRoleid"></association>
+		
+	</resultMap>
+	
+	<!-- 所有用户列表 -->
+	<select id="findalluser" parameterType="java.lang.Integer" resultMap="userinfo">
+		select userid,loginname,loginpwd,realname,email,user_desc,user_status,deptno,roleid,picpath from users 
+		where userid&lt;&gt;#{userid}
+	</select>
+	
+	<!-- 验证用户名是否存在 -->
+	<select id="checkname" parameterType="java.lang.String" resultType="java.lang.Integer">
+		select count(loginname) from users where loginname=#{loginname}
+	</select>
+	
+	<select id="findRoleByUserid" parameterType="java.lang.Integer" resultType="java.lang.Integer" >
+		select roleid from users where userid=#{userid}
+	</select>
+	
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans default-autowire="byName"
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop 
+		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd">
+		
+	
+	<!-- spring注解支持 -->
+	<context:annotation-config></context:annotation-config>
+	<context:component-scan base-package="cn.sz.gl"></context:component-scan>
+	
+	
+	<context:property-placeholder location="classpath:jdbc.properties" />
+	
+	<!-- 数据源 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" >
+		<property name="driverClassName" value="${mydriver}" ></property>
+		<property name="url" value="${myurl}" ></property>
+		<property name="username" value="${myuser}" ></property>
+		<property name="password" value="${mypwd}" ></property>
+	</bean>
+	
+	<!-- 连接工厂 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean" >
+		<property name="dataSource" ref="dataSource" ></property>
+		<property name="configLocation" value="classpath:mybatis_cfg.xml" ></property>
+	</bean>
+	
+	<mvc:resources location="/js/" mapping="/js/**"></mvc:resources>
+	<mvc:resources location="/css/" mapping="/css/**"></mvc:resources>
+	<!-- <mvc:default-servlet-handler /> -->
+	<!-- mvc的注解驱动 -->
+	<mvc:annotation-driven></mvc:annotation-driven>
+	
+	
+	
+	
+	<!-- springmvc的视图处理器 -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" >
+		<property name="prefix" value="/" ></property>
+		<property name="suffix" value=".jsp" ></property>
+	</bean>
+	
+	<!-- 我的任务，myjob继承了QuartzJobBean父类，并重写executeInternal方法 -->
+	<!-- <bean id="jobdetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
+		<property name="jobClass" value="cn.sz.gl.service.MyJob"></property>
+	</bean>  -->
+	
+	
+	<!-- 
+	此时MyDetailJob类，不需要继承任何父类，该类里面的方法（这里的show方法）也没有任何限制
+	<bean id="myjob" class="cn.sz.gl.service.MyDetailJob"></bean>
+	
+	<bean id="jobdetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="myjob"></property>
+		<property name="targetMethod" value="show"></property>
+	</bean> -->
+	
+	
+	<!-- 配置触发器 -->
+	<!-- <bean id="simpleTrigger" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+		<property name="jobDetail" ref="jobdetail"></property>
+		开始的时间点,表示延时一秒执行
+		<property name="startDelay" value="1000"></property>
+		重复执行的时间间隔是2秒
+		<property name="repeatInterval" value="2000"></property>
+	</bean> -->
+	
+	<!-- <bean id="contrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail" ref="jobdetail"></property>
+		<property name="cronExpression" value="1/2 * * * * ? *"></property>
+	</bean> -->
+	
+	<!-- 配置调度器 -->
+	<!-- <bean id="mysche" autowire="no" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref bean="contrigger" />
+			</list>
+		</property>
+	</bean> -->
+	
+	<task:annotation-driven/>
+	
+	
+	
+</beans>
